@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy package &apos;com.example.order.security&apos; to &apos;updated-product-service-main/src/main/java&apos;&#x0A;- Original project: &apos;tcs-kart-order-main&apos;&#x0A;- Destination element: &apos;updated-product-service-main/src/main/java&apos;&#x0A;- Original element: &apos;tcs-kart-order-main/src/main/java/com.example.order.security&apos;" description="Copy package" destination="=updated-product-service-main/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/" element1="/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.example.order.security" flags="589830" fragments="1" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyPackages" stamp="1751439317560" version="1.0"/>
+</session>
