@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tcs.product.entity.Products;
 import com.tcs.product.entity.ProductsImages;
+import com.tcs.product.exception.ImageFormatException;
 import com.tcs.product.security.JwtUtil;
 import com.tcs.product.service.ProductService;
 
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,8 +39,8 @@ public class ProductController {
 	//New Changes and Updates by -Rahul
 	
 	@GetMapping("/products") 
-	public List<Products> getAllProducts(){
-		return productService.getAllProducts();
+	public Page<Products> getAllProducts(@RequestParam Integer page, @RequestParam Integer size){
+		return productService.getAllProducts(page,size);
 	}
 	
 	@GetMapping("/products/{name}") 
@@ -72,12 +74,12 @@ public class ProductController {
 	}
 	
 	@PutMapping("/admin/products/{id}")
-	public String updateProduct(@PathVariable Integer id, @RequestBody Products product, @RequestParam String imageUrl) {
-		return productService.updateProduct(id, product, imageUrl);
+	public String updateProduct(@PathVariable Integer id, @RequestBody Products product, @RequestParam String imageUrl, @RequestParam Integer imgId) {
+		return productService.updateProduct(id, product, imageUrl, imgId);
 	}
 	
 	@PostMapping("/admin/products/{id}/image")
-	public void uploadProductImages(@PathVariable Integer id, @RequestParam String url) {
+	public void uploadProductImages(@PathVariable Integer id, @RequestParam String url) throws ImageFormatException {
 		productService.uploadProductImages(id,url);
 	}
 	

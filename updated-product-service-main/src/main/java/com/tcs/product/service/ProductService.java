@@ -4,10 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.tcs.product.entity.Products;
 import com.tcs.product.entity.ProductsImages;
+import com.tcs.product.exception.ImageFormatException;
 import com.tcs.product.exception.NoProductsFoundException;
 import com.tcs.product.repository.ProductRepository;
 import com.tcs.product.repository.ProductsImagesRepository;
@@ -25,17 +28,19 @@ public class ProductService {
 		return productRepoitory.save(product);
 	}
 	
-	public String updateProduct(Integer id, Products product, String imageUrl) {
+	public String updateProduct(Integer id, Products product, String imageUrl, int imgId) {
 		product.setProductId(id);
 		List<ProductsImages> piList = productImageRepo.findByProductsProductId(product.getProductId());
 		
-		piList.get(0).setProduct(product);
-		piList.get(0).setUrl(imageUrl);
+		if(!piList.isEmpty() && imgId<piList.size()) {			
+			piList.get(imgId).setProduct(product);
+			piList.get(imgId).setUrl(imageUrl);
+		}
 		
 		product.setProductImagesList(null);
 		if(productRepoitory.findById(id).isPresent()) {	
 			productRepoitory.save(product);
-			productImageRepo.saveAll(piList);
+			if(!piList.isEmpty()) productImageRepo.saveAll(piList);
 			return "Update Sucess";
 		}
 		else {	
@@ -43,8 +48,9 @@ public class ProductService {
 		}
 	}
 	
-	public List<Products> getAllProducts() {
-		return productRepoitory.findAll();
+	
+	public Page<Products> getAllProducts(int page, int size) {
+		return productRepoitory.findAll(PageRequest.of(page,size));
 	}
 	
 	public List<Products> getAllProductsByName(String name){
@@ -73,7 +79,10 @@ public class ProductService {
 		return product;
 	}
 
-	public void uploadProductImages(Integer id, String url) {
+	public void uploadProductImages(Integer id, String url) throws ImageFormatException {
+		if(!(url.contains(".jpg") || url.contains(".png"))) {
+			throw new ImageFormatException("Only jpg and png format Allowed..");
+		}
 		Optional<Products> product = productRepoitory.findById(id);
 		if(product.isEmpty()) {
 			System.out.println("Not uploaded..1");
