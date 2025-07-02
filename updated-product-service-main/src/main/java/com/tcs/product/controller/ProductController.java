@@ -36,8 +36,6 @@ public class ProductController {
 	@Autowired
 	JwtUtil jwtUtil;
 	
-	//New Changes and Updates by -Rahul
-	
 	@GetMapping("/products") 
 	public Page<Products> getAllProducts(@RequestParam Integer page, @RequestParam Integer size){
 		return productService.getAllProducts(page,size);
@@ -53,7 +51,7 @@ public class ProductController {
 		return productService.getProductByCategories(category);
 	}
 	
-	@GetMapping("/product/{id}")
+	@GetMapping("/products/id/{id}")
 	public Optional<Products> getProductById(@PathVariable Integer id) {
 		return productService.getProductById(id);
 	}

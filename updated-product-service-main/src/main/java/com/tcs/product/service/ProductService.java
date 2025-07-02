@@ -36,8 +36,17 @@ public class ProductService {
 			piList.get(imgId).setProduct(product);
 			piList.get(imgId).setUrl(imageUrl);
 		}
+		else if(piList.isEmpty() && imgId>=0){ //first image, if imgId<0 -> then image not added.
+			ProductsImages newProductImage = new ProductsImages(); //new Object -> first image
+			newProductImage.setProduct(product);
+			newProductImage.setUrl(imageUrl);
+			
+			piList.add(newProductImage);
+			
+//			productImageRepo.save(newProductImage);
+		}
+		product.setProductImagesList(piList);
 		
-		product.setProductImagesList(null);
 		if(productRepoitory.findById(id).isPresent()) {	
 			productRepoitory.save(product);
 			if(!piList.isEmpty()) productImageRepo.saveAll(piList);
@@ -81,6 +90,7 @@ public class ProductService {
 
 	public void uploadProductImages(Integer id, String url) throws ImageFormatException {
 		if(!(url.contains(".jpg") || url.contains(".png"))) {
+			System.out.println("Not uploaded..Only jpg and png format Allowed..");
 			throw new ImageFormatException("Only jpg and png format Allowed..");
 		}
 		Optional<Products> product = productRepoitory.findById(id);
