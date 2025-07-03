@@ -72,7 +72,7 @@ public class ProductController {
 	}
 	
 	@PutMapping("/admin/products/{id}")
-	public String updateProduct(@PathVariable Long id, @RequestBody Product product, @RequestParam String imageUrl, @RequestParam Integer imgId) {
+	public String updateProduct(@PathVariable Long id, @RequestBody Product product, @RequestParam String imageUrl, @RequestParam Integer imgId) throws ImageFormatException {
 		return productService.updateProduct(id, product, imageUrl, imgId);
 	}
 	
