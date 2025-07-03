@@ -33,34 +33,42 @@ public class CartController {
 	@Autowired
     private JwtUtil jwtUtil;
 	
-	@PostMapping("products/reviews/{customerId}/{productId}")
-	public ResponseEntity<String> addReview(@PathVariable Long customerId, @PathVariable Long productId, @RequestParam Double rating,@RequestParam String review) {
-		boolean result = reviewService.addReview(customerId, productId,rating, review);
+	@PostMapping("products/reviews/{productId}")
+	public ResponseEntity<String> addReview(@RequestHeader("Authorization") String authHeader, @PathVariable Long productId, @RequestParam Double rating,@RequestParam String review) {
+		String token = authHeader.substring(7);
+        String email = jwtUtil.extractEmail(token);
+		boolean result = reviewService.addReview(email, productId,rating, review);
 		if(result)
 			return ResponseEntity.ok().body("Review added Succesfully");
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Review cannot be added");
 	}
 	
 	
-	@PutMapping("/wishlists/{customerId}/{productId}")
-	public ResponseEntity<String> addWishlist(@PathVariable Long customerId, @PathVariable Long productId) {
-		boolean result = cartService.addWishlist(customerId, productId);
+	@PutMapping("/wishlists/{productId}")
+	public ResponseEntity<String> addWishlist(@RequestHeader("Authorization") String authHeader, @PathVariable Long productId) {
+		String token = authHeader.substring(7);
+        String email = jwtUtil.extractEmail(token);
+		boolean result = cartService.addWishlist(email, productId);
 		if(result)
 			return ResponseEntity.ok().body("wishlist added Succesfully");
 	    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("wishlist cannot be added");
 		
 	}
-	@DeleteMapping("/wishlists/{customerId}/{productId}")
-	public ResponseEntity<String> removeWishlist(@PathVariable Long customerId, @PathVariable Long productId) {
-		boolean result = cartService.removeWishlist(customerId, productId);
+	@DeleteMapping("/wishlists/{productId}")
+	public ResponseEntity<String> removeWishlist(@RequestHeader("Authorization") String authHeader, @PathVariable Long productId) {
+		String token = authHeader.substring(7);
+        String email = jwtUtil.extractEmail(token);
+		boolean result = cartService.removeWishlist(email, productId);
 		if(result)
 			return ResponseEntity.ok().body("wishlist deleted Succesfully");
 	    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("wishlist cannot be deleted");
 		
 	}
-	@PutMapping("/carts/{customerId}/{productId}") //update the cart increment the quantity by 1
-	public ResponseEntity<String> updatecartItemQuantity(@PathVariable Long customerId, @PathVariable Long productId, @RequestParam Integer quantity ) {
-		boolean result = cartService.updateCartItemQuantity(customerId, productId,quantity);
+	@PutMapping("/carts/{productId}") //update the cart increment the quantity by 1
+	public ResponseEntity<String> updatecartItemQuantity(@RequestHeader("Authorization") String authHeader, @PathVariable Long productId, @RequestParam Integer quantity ) {
+		String token = authHeader.substring(7);
+        String email = jwtUtil.extractEmail(token);
+		boolean result = cartService.updateCartItemQuantity(email,productId,quantity);
 		if(result)
 			return ResponseEntity.ok().body("updated Succesfully");
 	    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Updation failed!!");
@@ -68,41 +76,51 @@ public class CartController {
 	}
 	
 		
-	@DeleteMapping("/carts/{customerId}/{productId}")//delete the cart item by customer id and product id
-	public ResponseEntity<String> deletecartItem(@PathVariable Long customerId, @PathVariable Long productId ) {
-		boolean result = cartService.removeProductFromCart(customerId, productId);
+	@DeleteMapping("/carts/{productId}")//delete the cart item by customer id and product id
+	public ResponseEntity<String> deletecartItem(@RequestHeader("Authorization") String authHeader, @PathVariable Long productId ) {
+		String token = authHeader.substring(7);
+        String email = jwtUtil.extractEmail(token);
+		boolean result = cartService.removeProductFromCart(email, productId);
 		if(result)
 			return ResponseEntity.ok().body("deleted Succesfully");
 	    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("deletion failed!!");
 		
 	}
-	@GetMapping("/carts/{customerId}")// get all the items by customerId from cart
-	public ResponseEntity<Optional<Cart>> getAllcartItemsByCustomerId(@PathVariable Long customerId) {
-		Optional<Cart> result = cartService.getAllCartItemsByCustomerId(customerId);
+	@GetMapping("/carts")// get all the items by customerId from cart
+	public ResponseEntity<Optional<Cart>> getAllcartItemsByCustomerId(@RequestHeader("Authorization") String authHeader) {
+		String token = authHeader.substring(7);
+        String email = jwtUtil.extractEmail(token);
+		Optional<Cart> result = cartService.getAllCartItemsByCustomerId(email);
 		if(!result.isEmpty()) return ResponseEntity.ok().body(result);
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 
 	}
-	@DeleteMapping("/carts/{customerId}")// delete all the items by customer id from cart
-	public ResponseEntity<String> clearCart(@PathVariable Long customerId) {
-		boolean result = cartService.clearCart(customerId);
+	@DeleteMapping("/carts")// delete all the items by customer id from cart
+	public ResponseEntity<String> clearCart(@RequestHeader("Authorization") String authHeader) {
+		String token = authHeader.substring(7);
+        String email = jwtUtil.extractEmail(token);
+		boolean result = cartService.clearCart(email);
 		if(result)
 			return ResponseEntity.ok().body("deleted Succesfully");
 	    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("deletion failed!!");
 	}
 	
-	@PostMapping("/carts/{customerId}/{productId}")
-	ResponseEntity<String> addProductToCart(@PathVariable Long customerId, @PathVariable Long productId) { 
-		boolean result = cartService.addProductToCart(customerId, productId);
+	@PostMapping("/carts/{productId}")
+	ResponseEntity<String> addProductToCart(@RequestHeader("Authorization") String authHeader, @PathVariable Long productId) { 
+		String token = authHeader.substring(7);
+        String email = jwtUtil.extractEmail(token);
+		boolean result = cartService.addProductToCart(email, productId);
 		if(result)
 			return ResponseEntity.ok().body("Added Sccessfully");
 	    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product cannot be added!!");
 		
 	}
 	
-	@PostMapping("/carts/orders/{customerId}")
-	ResponseEntity<String> placeOrder(@PathVariable Long customerId) {
-		boolean result = cartService.buyProducts(customerId);
+	@PostMapping("/carts/orders")
+	ResponseEntity<String> placeOrder(@RequestHeader("Authorization") String authHeader) {
+		String token = authHeader.substring(7);
+        String email = jwtUtil.extractEmail(token);
+		boolean result = cartService.buyProducts(email);
 		if(result)
 			return ResponseEntity.ok().body("Order Placed Sccessfully");
 		 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order  cannot be placed!!");

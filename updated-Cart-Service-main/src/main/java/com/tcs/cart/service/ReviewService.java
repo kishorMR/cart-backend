@@ -32,8 +32,8 @@ public class ReviewService {
 	private OrderItemRepository orderItemRepository;
 	
 	
-	public boolean addReview(Long customerId, Long productId,Double rating, String userReview) {
-		Optional<User> optionalUser = userRepository.findById(customerId);
+	public boolean addReview(String email, Long productId,Double rating, String userReview) {
+		Optional<User> optionalUser = userRepository.findByEmail(email);
 		if (optionalUser.isEmpty())
 			throw new UserNotFoundException();
 

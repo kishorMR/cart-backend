@@ -2,7 +2,11 @@ package com.example.order.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -12,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.example.order.bean.OrderBean;
 import com.example.order.bean.OrderItemBean;
 import com.example.order.bean.SendingMail;
+import com.example.order.bean.Statistics;
 import com.example.order.entity.Cart;
 import com.example.order.entity.CartItem;
 import com.example.order.entity.OrderItem;
@@ -33,7 +38,7 @@ public class OrderService {
 	OrderRepository orderRepo;
 
 	@Autowired
-	ProductRepository productPepo;
+	ProductRepository productRepo;
 
 	@Autowired
 	UserRepository userRepo;
@@ -66,7 +71,7 @@ public class OrderService {
 		List<OrderItem> items = new ArrayList<>();
 		Double TotalPrice = 0.0;
 		for (OrderItemBean dto : orderBean.getOrderItemsBean()) {
-			Product product = productPepo.findById(dto.getProductId())
+			Product product = productRepo.findById(dto.getProductId())
 					.orElseThrow(() -> new ProductNotFoundException());
 			if (product.getQuantity() < dto.getQuantity()) {
 				this.AlertMail(product);
@@ -76,7 +81,7 @@ public class OrderService {
 		ArrayList<String> ProductName = new ArrayList<>();
 		for (OrderItemBean dto : orderBean.getOrderItemsBean()) {
 
-			Product product = productPepo.findById(dto.getProductId())
+			Product product = productRepo.findById(dto.getProductId())
 					.orElseThrow(() -> new ProductNotFoundException());
 			product.setQuantity(product.getQuantity() - dto.getQuantity());
 			if (product.getQuantity() < 5) {
@@ -89,7 +94,7 @@ public class OrderService {
 			item.setQuantity(dto.getQuantity());
 			item.setPrice(product.getPrice() * dto.getQuantity());
 			TotalPrice += item.getPrice();
-			productPepo.save(product);
+			productRepo.save(product);
 			items.add(item);
 		}
 
@@ -219,9 +224,62 @@ public class OrderService {
 		for (CartItem cartItem : cartItems) {
 			Product product = cartItem.getProduct();
 			product.setQuantity(product.getQuantity() + cartItem.getQuantity());
-			productPepo.save(product);
+			productRepo.save(product);
 		}
 
 		cartItemRepo.deleteById(cartId);
+	}
+	
+
+	Double generateTotalRevenue(Date startDate, Date endDate) {
+		List<Orders> allOrders = orderRepo.findByCreatedDateBetween(startDate, endDate);
+		if (allOrders.isEmpty())
+			throw new OrdersNotFoundException();
+		Double totalAmount = 0.0;
+		for (Orders order : allOrders) {
+			totalAmount += order.getTotalAmount();
+		}
+		return totalAmount;
+	}
+
+	Integer noOfOrders(Date startDate, Date endDate) {
+		List<Orders> allOrders = orderRepo.findByCreatedDateBetween(startDate, endDate);
+		return allOrders.size();
+	}
+
+	List<Product> topSellingProducts(Date startDate, Date endDate) {
+		List<OrderItem> allOrderItems = new ArrayList<>();
+		List<Product> allProducts = productRepo.findAll();
+		List<Orders> allOrder = orderRepo.findByCreatedDateBetween(startDate, endDate);
+		for (Orders order : allOrder) {
+			allOrderItems.addAll(order.getOrderItems());
+			}
+		Map<Product,Integer>map = new HashMap<>();
+		
+		for(OrderItem orderItem: allOrderItems) {
+			Product product = orderItem.getProduct();
+			int quantity = map.getOrDefault(product, 0);
+			map.put(product, quantity + orderItem.getQuantity());
+		
+		}
+		List<Map.Entry<Product, Integer>> sortedEntries = new ArrayList<>(map.entrySet());
+		sortedEntries.sort((e1,e2) ->
+			e2.getValue().compareTo(e1.getValue())
+		);
+		List<Product>products = new ArrayList<>();
+		for(int i = 0; i < Math.min(5, sortedEntries.size()); i++) {
+			products.add(sortedEntries.get(i).getKey());
+		}
+		
+		return products;
+
+}
+
+	public Statistics getSalesStatistics(Date startDate, Date endDate) {
+		Statistics stats = new Statistics();
+		stats.setTotalRevenue(generateTotalRevenue(startDate, endDate));
+		stats.setNoOfOrders(noOfOrders(startDate,endDate));
+		stats.setProducts(topSellingProducts(startDate, endDate));
+		return stats;
 	}
 }

@@ -42,8 +42,8 @@ public class CartService {
 	private WishlistRepository wishlistRepository;
 	
 	
-	public boolean addWishlist(Long customerId, Long productId) {
-		Optional<User> optionalUser = userRepository.findById(customerId);
+	public boolean addWishlist(String email, Long productId) {
+		Optional<User> optionalUser = userRepository.findByEmail(email);
 		if (optionalUser.isEmpty())
 			throw new UserNotFoundException();
 
@@ -66,8 +66,8 @@ public class CartService {
 	}
 	
 
-	public boolean removeWishlist(Long customerId, Long productId) {
-		Optional<User> optionalUser = userRepository.findById(customerId);
+	public boolean removeWishlist(String email, Long productId) {
+		Optional<User> optionalUser = userRepository.findByEmail(email);
 		if (optionalUser.isEmpty())
 			throw new UserNotFoundException();
 
@@ -87,12 +87,12 @@ public class CartService {
 		return false;
 	}
 
-	public boolean addProductToCart(Long customerId, Long productId) {
+	public boolean addProductToCart(String email, Long productId) {
 
 		Cart cart = new Cart();
 		CartItem cartItem = new CartItem();
 
-		Optional<User> user = userRepository.findById(customerId);
+		Optional<User> user = userRepository.findByEmail(email);
 		if (user.isEmpty())
 			throw new UserNotFoundException();
 
@@ -104,7 +104,7 @@ public class CartService {
 		if(optionalCartItem.isPresent()) {
 			CartItem getCartItem = optionalCartItem.get();
 			Integer quant = getCartItem.getQuantity();
-			updateCartItemQuantity(customerId,productId,quant+1 );
+			updateCartItemQuantity(email,productId,quant+1 );
 				return true;
 		
 		}
@@ -131,8 +131,8 @@ public class CartService {
 
 
 
-	public boolean updateCartItemQuantity(Long customerId, Long productId, Integer quantity) {
-		Optional<User> user = userRepository.findById(customerId);
+	public boolean updateCartItemQuantity(String email, Long productId, Integer quantity) {
+		Optional<User> user = userRepository.findByEmail(email);
 		if (user.isEmpty())
 			throw new UserNotFoundException();
 
@@ -153,8 +153,8 @@ public class CartService {
 		return true;
 	}
 
-	public boolean removeProductFromCart(Long customerId, Long productId) {
-		Optional<User> user = userRepository.findById(customerId);
+	public boolean removeProductFromCart(String email, Long productId) {
+		Optional<User> user = userRepository.findByEmail(email);
 		if (user.isEmpty())
 		    throw new UserNotFoundException();
 
@@ -172,8 +172,8 @@ public class CartService {
 
 	}
 
-	public Optional<Cart> getAllCartItemsByCustomerId(Long customerId) {
-		Optional<User> user = userRepository.findById(customerId);
+	public Optional<Cart> getAllCartItemsByCustomerId(String email) {
+		Optional<User> user = userRepository.findByEmail(email);
 		if (user.isEmpty())
 			throw new UserNotFoundException();
 
@@ -182,9 +182,9 @@ public class CartService {
 	      return cartDetail;
 	}
 
-	public boolean clearCart(Long customerId) {
+	public boolean clearCart(String email) {
 		
-		Optional<User> user = userRepository.findById(customerId);
+		Optional<User> user = userRepository.findByEmail(email);
 		if (user.isEmpty())
 			throw new UserNotFoundException();
 		
@@ -194,9 +194,9 @@ public class CartService {
 
 	}
 	
-	public boolean buyProducts(Long customerId) {
+	public boolean buyProducts(String email) {
 		
-		Optional<User> user = userRepository.findById(customerId);
+		Optional<User> user = userRepository.findByEmail(email);
 		if (user.isEmpty())
 			throw new UserNotFoundException();
 		
