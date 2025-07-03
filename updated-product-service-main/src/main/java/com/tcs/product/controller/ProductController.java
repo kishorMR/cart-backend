@@ -56,7 +56,7 @@ public class ProductController {
 		return productService.getProductById(id);
 	}
 	
-	@GetMapping("/productImage/{id}")
+	@GetMapping("/products/productImage/{id}")
 	public List<ProductsImages> getProductImageById(@PathVariable Integer id){
 		return productService.getProductImageById(id);
 	}
