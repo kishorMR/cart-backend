@@ -34,11 +34,23 @@ public class ProductService {
 		
 		if(!piList.isEmpty() && imgId<piList.size()) {			
 			piList.get(imgId).setProduct(product);
+			
+			if(!(imageUrl.contains(".jpg") || imageUrl.contains(".png"))) {
+				System.out.println("Not uploaded..Only jpg and png format Allowed..");
+				throw new ImageFormatException("Only jpg and png format Allowed..");
+				return "Not uploaded..Only jpg and png format Allowed..";
+			}
 			piList.get(imgId).setUrl(imageUrl);
 		}
 		else if(piList.isEmpty() && imgId>=0){ //first image, if imgId<0 -> then image not added.
 			ProductImage newProductImage = new ProductImage(); //new Object -> first image
 			newProductImage.setProduct(product);
+			
+			if(!(imageUrl.contains(".jpg") || imageUrl.contains(".png"))) {
+				System.out.println("Not uploaded..Only jpg and png format Allowed..");
+				throw new ImageFormatException("Only jpg and png format Allowed..");
+				return "Not uploaded..Only jpg and png format Allowed..";
+			}
 			newProductImage.setUrl(imageUrl);
 			
 			piList.add(newProductImage);
