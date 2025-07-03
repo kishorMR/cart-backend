@@ -15,12 +15,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OrderItem {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long orderItemId;
 
     @ManyToOne
     private Product product;
 
     private Integer quantity;
+    private Double price;
 
     @ManyToOne
     private Orders orders;

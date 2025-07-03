@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class Cart {
 	
 	 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private Long id;
+	    private Long cartId;
 
 	    @OneToOne
 	    private User user;

@@ -12,13 +12,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductImage {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer productImageId;
+	private Long productImageId;
 	
 	private String url;
 	
@@ -26,42 +32,6 @@ public class ProductImage {
 	@JoinColumn(name="product_id") //F.K connects with Product table
 	private Product product;
 
-	
-	public ProductImage() {
-		
-	}
-	
-	public ProductImage(Integer productImageId, String url, Product Product) {
-		super();
-		this.productImageId = productImageId;
-		this.url = url;
-		this.product = Product;
-	}
-
-	public Integer getProductImageId() {
-		return productImageId;
-	}
-
-	public void setProductImageId(Integer productImageId) {
-		this.productImageId = productImageId;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-	
-	@JsonIgnore
-	public Product getProduct() {
-		return product;
-	}
-
-	public void setProduct(Product Product) {
-		this.product = Product;
-	}
 	
 	
 }

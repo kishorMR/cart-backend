@@ -56,8 +56,8 @@ public class OrderService {
 	@Autowired
 	private JavaMailSender javaMailSender;
 	
-	@Autowired
-	private ProductClient productClient;
+//	@Autowired
+//	ProductRepository productClient;
 
 	public Orders PlaceOrder(OrderBean orderBean, String email) {
 		User user = userRepo.findByEmail(email);
@@ -82,12 +82,14 @@ public class OrderService {
 		List<OrderItem> items = new ArrayList<>();
 		Double TotalPrice = 0.0;
 		for (OrderItemBean dto : orderBean.getOrderItemsBean()) {
-			Product product;
-			try {
-			    product = productClient.getProductById(dto.getProductId());
-			} catch (Exception e) {
-			    throw new ProductNotFoundException();
-			}
+//			Product product;
+//			try {
+//			    product = productClient.findById(dto.getProductId());
+//			} catch (Exception e) {
+//			    throw new ProductNotFoundException();
+//			}
+			Product product = productRepo.findById(dto.getProductId())
+					.orElseThrow(() -> new ProductNotFoundException());
 			if (product.getQuantity() < dto.getQuantity()) {
 				this.AlertMail(product);
 				throw new NoEnoughQuantityException();
@@ -95,12 +97,14 @@ public class OrderService {
 		}
 		ArrayList<String> ProductName = new ArrayList<>();
 		for (OrderItemBean dto : orderBean.getOrderItemsBean()) {
-			Product product;
-			try {
-			    product = productClient.getProductById(dto.getProductId());
-			} catch (Exception e) {
-			    throw new ProductNotFoundException();
-			}
+//			Product product;
+//			try {
+//			    product = productClient.getProductById(dto.getProductId());
+//			} catch (Exception e) {
+//			    throw new ProductNotFoundException();
+//			}
+			Product product = productRepo.findById(dto.getProductId())
+					.orElseThrow(() -> new ProductNotFoundException());
 			product.setQuantity(product.getQuantity() - dto.getQuantity());
 			if (product.getQuantity() < 5) {
 				this.AlertMail(product);

@@ -28,7 +28,7 @@ public class ProductService {
 		return productRepoitory.save(product);
 	}
 	
-	public String updateProduct(Integer id, Product product, String imageUrl, int imgId) {
+	public String updateProduct(Long id, Product product, String imageUrl, int imgId) {
 		product.setProductId(id);
 		List<ProductImage> piList = productImageRepo.findByProductProductId(product.getProductId());
 		
@@ -68,7 +68,7 @@ public class ProductService {
 		else return productRepoitory.findByProductNameContainingIgnoreCase(name);
 	}
 	
-	public String deleteProduct(Integer id) {
+	public String deleteProduct(Long id) {
 		if(productRepoitory.findById(id).isPresent()) {
 			productRepoitory.deleteById(id);
 			return "The Item with ID: "+id+" is deleted!!";
@@ -79,7 +79,7 @@ public class ProductService {
 		return productRepoitory.findByCategoryContainingIgnoreCase(category);
 	}
 
-	public Optional<Product> getProductById(Integer id) {
+	public Optional<Product> getProductById(Long id) {
 		Optional<Product> product = productRepoitory.findById(id);
 		if(product.isEmpty()) {
 			throw new NoProductsFoundException();
@@ -88,7 +88,7 @@ public class ProductService {
 		return product;
 	}
 
-	public void uploadProductImages(Integer id, String url) throws ImageFormatException {
+	public void uploadProductImages(Long id, String url) throws ImageFormatException {
 		if(!(url.contains(".jpg") || url.contains(".png"))) {
 			System.out.println("Not uploaded..Only jpg and png format Allowed..");
 			throw new ImageFormatException("Only jpg and png format Allowed..");
@@ -118,7 +118,7 @@ public class ProductService {
 		}
 	}
 	
-	public List<ProductImage> getProductImageById(Integer id) {
+	public List<ProductImage> getProductImageById(Long id) {
 		Optional<Product> product = productRepoitory.findById(id);
 		if(product.isEmpty()) {
 			throw new NoProductsFoundException();

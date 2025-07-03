@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +25,7 @@ import lombok.NoArgsConstructor;
 public class Orders {
 	
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long orderId;
 
     @ManyToOne
     private User user;
@@ -32,10 +33,13 @@ public class Orders {
     @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    private String status;
+    private String status= "pending";
 
     private Double totalAmount;
 
+    @NotNull
+    private String address;
+    
     @CreationTimestamp
     private Date createdDate;
 

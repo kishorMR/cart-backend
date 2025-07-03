@@ -52,12 +52,12 @@ public class ProductController {
 	}
 	
 	@GetMapping("/products/id/{id}")
-	public Optional<Product> getProductById(@PathVariable Integer id) {
+	public Optional<Product> getProductById(@PathVariable Long id) {
 		return productService.getProductById(id);
 	}
 	
 	@GetMapping("/products/productImage/{id}")
-	public List<ProductImage> getProductImageById(@PathVariable Integer id){
+	public List<ProductImage> getProductImageById(@PathVariable Long id){
 		return productService.getProductImageById(id);
 	}
 	
@@ -67,17 +67,17 @@ public class ProductController {
 	}
 	
 	@DeleteMapping("/admin/products/{id}")
-	public String deleteProduct(@PathVariable Integer id) {
+	public String deleteProduct(@PathVariable Long id) {
 		return productService.deleteProduct(id);
 	}
 	
 	@PutMapping("/admin/products/{id}")
-	public String updateProduct(@PathVariable Integer id, @RequestBody Product product, @RequestParam String imageUrl, @RequestParam Integer imgId) {
+	public String updateProduct(@PathVariable Long id, @RequestBody Product product, @RequestParam String imageUrl, @RequestParam Integer imgId) {
 		return productService.updateProduct(id, product, imageUrl, imgId);
 	}
 	
 	@PostMapping("/admin/products/{id}/image")
-	public void uploadProductImages(@PathVariable Integer id, @RequestParam String url) throws ImageFormatException {
+	public void uploadProductImages(@PathVariable Long id, @RequestParam String url) throws ImageFormatException {
 		productService.uploadProductImages(id,url);
 	}
 	

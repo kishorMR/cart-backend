@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,20 +29,27 @@ public class Product {
     @Column(nullable = false)
     private String productName;
 
+    @Column(nullable = false)
+    private Integer quantity;
+    
+    @Column(nullable = false)
     private String description;
 
-    private Double price;
-
-    private Integer quantity;
-
+    @Column(nullable = false)
     private String category;
+
+    @Column(nullable = false)
+    private Double price;
     
-    private String imageUrl;
+    @Column(nullable=false)
+	private String availabilityStatus;
     
+    @ElementCollection
+	private List<Integer> avaialablePincodes;
    
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<Review> reviews = new ArrayList<>(); 
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<ProductImage> images = new ArrayList<>();
+    private List<ProductImage> productImageList = new ArrayList<>();
 }

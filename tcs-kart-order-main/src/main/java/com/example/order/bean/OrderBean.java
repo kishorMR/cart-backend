@@ -24,8 +24,9 @@ public class OrderBean {
 	
 	@CreationTimestamp
 	private LocalDate orderedDate;
+	
 	private List<OrderItemBean> orderItemsBean;
-	public OrderBean(String email, String address,Integer pincode, List<OrderItemBean> orderItemsBean) {
+	public OrderBean(String address,Integer pincode, List<OrderItemBean> orderItemsBean) {
 		super();
 //		this.email = email;
 		this.address = address;

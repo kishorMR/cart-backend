@@ -6,12 +6,14 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -48,8 +50,7 @@ public class User {
 	@CreationTimestamp
 	private Date created_Date;
 	
-	@ManyToMany
-    private List<Product> wishlist = new ArrayList<>();
-	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Wishlist> wishlists = new ArrayList<>();
 	
 }

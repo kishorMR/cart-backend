@@ -9,6 +9,6 @@ import com.tcs.product.entity.ProductImage;
 
 public interface ProductsImagesRepository extends JpaRepository<ProductImage, Integer>{
 
-	List<ProductImage> findByProductProductId(Integer productId);
+	List<ProductImage> findByProductProductId(Long productId);
 
 }

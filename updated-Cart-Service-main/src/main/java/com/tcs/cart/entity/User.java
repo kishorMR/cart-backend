@@ -31,7 +31,7 @@ public class User {
 	
 	@Id  
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer uid;
+	private Long uid;
 	@Column(nullable = false)
     @NotBlank(message = "Name is mandatory")
 	private String name;
