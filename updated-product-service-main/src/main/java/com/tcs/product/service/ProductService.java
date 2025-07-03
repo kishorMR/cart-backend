@@ -28,7 +28,7 @@ public class ProductService {
 		return productRepoitory.save(product);
 	}
 	
-	public String updateProduct(Long id, Product product, String imageUrl, int imgId) {
+	public String updateProduct(Long id, Product product, String imageUrl, int imgId) throws ImageFormatException {
 		product.setProductId(id);
 		List<ProductImage> piList = productImageRepo.findByProductProductId(product.getProductId());
 		
@@ -38,7 +38,6 @@ public class ProductService {
 			if(!(imageUrl.contains(".jpg") || imageUrl.contains(".png"))) {
 				System.out.println("Not uploaded..Only jpg and png format Allowed..");
 				throw new ImageFormatException("Only jpg and png format Allowed..");
-				return "Not uploaded..Only jpg and png format Allowed..";
 			}
 			piList.get(imgId).setUrl(imageUrl);
 		}
@@ -49,7 +48,6 @@ public class ProductService {
 			if(!(imageUrl.contains(".jpg") || imageUrl.contains(".png"))) {
 				System.out.println("Not uploaded..Only jpg and png format Allowed..");
 				throw new ImageFormatException("Only jpg and png format Allowed..");
-				return "Not uploaded..Only jpg and png format Allowed..";
 			}
 			newProductImage.setUrl(imageUrl);
 			
