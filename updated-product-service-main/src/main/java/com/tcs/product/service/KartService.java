@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.tcs.product.entity.Kart;
-import com.tcs.product.entity.Products;
+import com.tcs.product.entity.Product;
 import com.tcs.product.repository.KartRepository;
 import com.tcs.product.repository.ProductRepository;
 
@@ -22,7 +22,7 @@ public class KartService {
 	
 	
 	public boolean addProductToKart(@RequestParam Integer cid, @RequestParam Integer pid) { //add to cart + update the quantity
-		Optional<Products> product = prodRepo.findById(pid); 
+		Optional<Product> product = prodRepo.findById(pid); 
 		if(product.isPresent()) {//product is available
 			Optional<Kart> exist = kartRepo.findByCustomerIdAndProductId(cid, pid); //combo
 			if (exist.isPresent()) { //combo exist -> update the Qty

@@ -174,6 +174,7 @@ public class CartService {
 
 	public Optional<Cart> getAllCartItemsByCustomerId(String email) {
 		Optional<User> user = userRepository.findByEmail(email);
+		System.out.println(email);
 		if (user.isEmpty())
 			throw new UserNotFoundException();
 

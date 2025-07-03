@@ -3,8 +3,8 @@ package com.tcs.product.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tcs.product.entity.Products;
-import com.tcs.product.entity.ProductsImages;
+import com.tcs.product.entity.Product;
+import com.tcs.product.entity.ProductImage;
 import com.tcs.product.exception.ImageFormatException;
 import com.tcs.product.security.JwtUtil;
 import com.tcs.product.service.ProductService;
@@ -37,32 +37,32 @@ public class ProductController {
 	JwtUtil jwtUtil;
 	
 	@GetMapping("/products") 
-	public Page<Products> getAllProducts(@RequestParam Integer page, @RequestParam Integer size){
+	public Page<Product> getAllProducts(@RequestHeader("Authorization") String authHeader,@RequestParam Integer page, @RequestParam Integer size){
 		return productService.getAllProducts(page,size);
 	}
 	
 	@GetMapping("/products/{name}") 
-	public List<Products> getAllProductByName(@PathVariable String name){
+	public List<Product> getAllProductByName(@PathVariable String name){
 		return productService.getAllProductsByName(name);
 	}
 	
 	@GetMapping("/products/category/{category}") 
-	public List<Products> getProductByCategories(@PathVariable String category) {
+	public List<Product> getProductByCategories(@PathVariable String category) {
 		return productService.getProductByCategories(category);
 	}
 	
 	@GetMapping("/products/id/{id}")
-	public Optional<Products> getProductById(@PathVariable Integer id) {
+	public Optional<Product> getProductById(@PathVariable Integer id) {
 		return productService.getProductById(id);
 	}
 	
 	@GetMapping("/products/productImage/{id}")
-	public List<ProductsImages> getProductImageById(@PathVariable Integer id){
+	public List<ProductImage> getProductImageById(@PathVariable Integer id){
 		return productService.getProductImageById(id);
 	}
 	
 	@PostMapping("/admin/addProduct")
-	public Products addNewProducts(@RequestBody Products product) {
+	public Product addNewProducts(@RequestBody Product product) {
 		return productService.addNewProduct(product);
 	}
 	
@@ -72,7 +72,7 @@ public class ProductController {
 	}
 	
 	@PutMapping("/admin/products/{id}")
-	public String updateProduct(@PathVariable Integer id, @RequestBody Products product, @RequestParam String imageUrl, @RequestParam Integer imgId) {
+	public String updateProduct(@PathVariable Integer id, @RequestBody Product product, @RequestParam String imageUrl, @RequestParam Integer imgId) {
 		return productService.updateProduct(id, product, imageUrl, imgId);
 	}
 	

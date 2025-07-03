@@ -129,10 +129,19 @@ public class CartController {
 	@GetMapping("/mycart")
     public ResponseEntity<?> getMyCart(@RequestHeader("Authorization") String authHeader) {
 
-        String token = authHeader.substring(7); // Remove "Bearer "
+		String token = authHeader.substring(7);
         String email = jwtUtil.extractEmail(token);
+        
+		Optional<Cart> result = cartService.getAllCartItemsByCustomerId(email);
+		
+		if(!result.isEmpty()) return ResponseEntity.ok().body(result);
+		
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+	@GetMapping("/my")
+    public ResponseEntity<String> getMyNewCart() {
 
         // Now use email as needed
-        return ResponseEntity.ok("Fetching cart for: " + email);
+        return ResponseEntity.ok("Fetching cart for: ");
     }
 	}

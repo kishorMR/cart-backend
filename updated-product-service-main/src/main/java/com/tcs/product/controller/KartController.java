@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tcs.product.entity.Kart;
-import com.tcs.product.entity.Products;
+import com.tcs.product.entity.Product;
 import com.tcs.product.exception.NoProductsFoundException;
 import com.tcs.product.repository.KartRepository;
 import com.tcs.product.repository.ProductRepository;

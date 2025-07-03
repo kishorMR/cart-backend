@@ -1,11 +1,8 @@
 package com.example.order.controller;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -14,14 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.order.bean.OrderBean;
-import com.example.order.bean.Statistics;
 import com.example.order.entity.Orders;
 import com.example.order.security.JwtUtil;
 import com.example.order.service.OrderService;
+
+import jakarta.validation.Valid;
 
 
 @RestController
@@ -35,15 +32,18 @@ public class OrderController {
 	JwtUtil jwtUtil;
 	
 	@PostMapping("/placeorder")
-	public Orders PlaceOrder(@RequestBody OrderBean orderdto)
+	public Orders PlaceOrder(@RequestHeader("Authorization") String authHeader,@RequestBody OrderBean orderdto)
 	{
-	     
-	      return  services.PlaceOrder(orderdto);
+		  String token = authHeader.substring(7);
+		  String email = jwtUtil.extractEmail(token);  
+	      return  services.PlaceOrder(orderdto,email);
 			
 	}
-	@GetMapping("/users/{email}")
-	 public List<Orders> getOrdersByEmail(@PathVariable String email) {
-	       return services.getOrdersByUserEmail(email);
+	@GetMapping("/users")
+	 public List<Orders> getOrdersByEmail(@RequestHeader("Authorization") String authHeader) {
+		String token = authHeader.substring(7);
+		String email = jwtUtil.extractEmail(token);  
+		return services.getOrdersByUserEmail(email);
 	 }
 	@GetMapping("/allorders")
 	 public List<Orders> getAllOrders() {
@@ -64,21 +64,12 @@ public class OrderController {
 	{
 		return services.updateStatus(id, status);
 	}
-	@GetMapping("/carttomoveorder/{email}/{address}")
-	public Orders carttoMoveOrder(@PathVariable String email,@PathVariable  String address)
-	{
-		return services.cartMoveToOrder(email, address);
-	}
+//	@GetMapping("/carttomoveorder/{email}/{address}")
+//	public Orders carttoMoveOrder(@PathVariable String email,@PathVariable  String address)
+//	{
+//		return services.cartMoveToOrder(email, address);
+//	}
 	 
-	@GetMapping("/admin/stats")
-	ResponseEntity<Statistics> getStats(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") Date startDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss" ) Date endDate) {
-		
-		Statistics result = services.getSalesStatistics(startDate, endDate);
-		if(result != null)
-			return ResponseEntity.ok().body(result);
-		 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-	
-	}
 
 }
 

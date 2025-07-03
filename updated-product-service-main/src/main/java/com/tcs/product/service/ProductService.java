@@ -8,8 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import com.tcs.product.entity.Products;
-import com.tcs.product.entity.ProductsImages;
+import com.tcs.product.entity.Product;
+import com.tcs.product.entity.ProductImage;
 import com.tcs.product.exception.ImageFormatException;
 import com.tcs.product.exception.NoProductsFoundException;
 import com.tcs.product.repository.ProductRepository;
@@ -24,20 +24,20 @@ public class ProductService {
 	@Autowired
 	ProductsImagesRepository productImageRepo;
 	
-	public Products addNewProduct(Products product) {
+	public Product addNewProduct(Product product) {
 		return productRepoitory.save(product);
 	}
 	
-	public String updateProduct(Integer id, Products product, String imageUrl, int imgId) {
+	public String updateProduct(Integer id, Product product, String imageUrl, int imgId) {
 		product.setProductId(id);
-		List<ProductsImages> piList = productImageRepo.findByProductsProductId(product.getProductId());
+		List<ProductImage> piList = productImageRepo.findByProductProductId(product.getProductId());
 		
 		if(!piList.isEmpty() && imgId<piList.size()) {			
 			piList.get(imgId).setProduct(product);
 			piList.get(imgId).setUrl(imageUrl);
 		}
 		else if(piList.isEmpty() && imgId>=0){ //first image, if imgId<0 -> then image not added.
-			ProductsImages newProductImage = new ProductsImages(); //new Object -> first image
+			ProductImage newProductImage = new ProductImage(); //new Object -> first image
 			newProductImage.setProduct(product);
 			newProductImage.setUrl(imageUrl);
 			
@@ -45,7 +45,7 @@ public class ProductService {
 			
 //			productImageRepo.save(newProductImage);
 		}
-		product.setProductImagesList(piList);
+		product.setProductImageList(piList);
 		
 		if(productRepoitory.findById(id).isPresent()) {	
 			productRepoitory.save(product);
@@ -58,11 +58,11 @@ public class ProductService {
 	}
 	
 	
-	public Page<Products> getAllProducts(int page, int size) {
+	public Page<Product> getAllProducts(int page, int size) {
 		return productRepoitory.findAll(PageRequest.of(page,size));
 	}
 	
-	public List<Products> getAllProductsByName(String name){
+	public List<Product> getAllProductsByName(String name){
 		if(productRepoitory.findByProductNameContainingIgnoreCase(name).isEmpty())
 			throw new NoProductsFoundException();
 		else return productRepoitory.findByProductNameContainingIgnoreCase(name);
@@ -75,12 +75,12 @@ public class ProductService {
 		}else throw new NoProductsFoundException();
 	}
 
-	public List<Products> getProductByCategories(String category) {
+	public List<Product> getProductByCategories(String category) {
 		return productRepoitory.findByCategoryContainingIgnoreCase(category);
 	}
 
-	public Optional<Products> getProductById(Integer id) {
-		Optional<Products> product = productRepoitory.findById(id);
+	public Optional<Product> getProductById(Integer id) {
+		Optional<Product> product = productRepoitory.findById(id);
 		if(product.isEmpty()) {
 			throw new NoProductsFoundException();
 		}
@@ -93,22 +93,22 @@ public class ProductService {
 			System.out.println("Not uploaded..Only jpg and png format Allowed..");
 			throw new ImageFormatException("Only jpg and png format Allowed..");
 		}
-		Optional<Products> product = productRepoitory.findById(id);
+		Optional<Product> product = productRepoitory.findById(id);
 		if(product.isEmpty()) {
 			System.out.println("Not uploaded..1");
 			return;
 		}
 			
-		List<ProductsImages> productImageList = productImageRepo.findByProductsProductId(product.get().getProductId());
+		List<ProductImage> productImageList = productImageRepo.findByProductProductId(product.get().getProductId());
 		if(productImageList.isEmpty()) { //not present in ProductImage
-			ProductsImages newProductImage = new ProductsImages(); //new Object
+			ProductImage newProductImage = new ProductImage(); //new Object
 			newProductImage.setProduct(product.get());
 			newProductImage.setUrl(url);
 			
 			productImageRepo.save(newProductImage);
 		}
 		else {
-			ProductsImages newProductImage = new ProductsImages(); //new Object
+			ProductImage newProductImage = new ProductImage(); //new Object
 			newProductImage.setProduct(product.get());
 			newProductImage.setUrl(url);
 			
@@ -118,13 +118,13 @@ public class ProductService {
 		}
 	}
 	
-	public List<ProductsImages> getProductImageById(Integer id) {
-		Optional<Products> product = productRepoitory.findById(id);
+	public List<ProductImage> getProductImageById(Integer id) {
+		Optional<Product> product = productRepoitory.findById(id);
 		if(product.isEmpty()) {
 			throw new NoProductsFoundException();
 		}
 		
-		List<ProductsImages> productImages = productImageRepo.findByProductsProductId(product.get().getProductId());
+		List<ProductImage> productImages = productImageRepo.findByProductProductId(product.get().getProductId());
 		
 		return productImages;
 	}

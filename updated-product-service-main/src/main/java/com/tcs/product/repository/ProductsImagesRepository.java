@@ -5,10 +5,10 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.tcs.product.entity.ProductsImages;
+import com.tcs.product.entity.ProductImage;
 
-public interface ProductsImagesRepository extends JpaRepository<ProductsImages, Integer>{
+public interface ProductsImagesRepository extends JpaRepository<ProductImage, Integer>{
 
-	List<ProductsImages> findByProductsProductId(Integer productId);
+	List<ProductImage> findByProductProductId(Integer productId);
 
 }

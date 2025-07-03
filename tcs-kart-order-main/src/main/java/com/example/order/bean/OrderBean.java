@@ -20,14 +20,16 @@ public class OrderBean {
 	private String email;
 	private String address;
 	private String status= "pending";
+	private Integer pincode;
 	
 	@CreationTimestamp
 	private LocalDate orderedDate;
 	private List<OrderItemBean> orderItemsBean;
-	public OrderBean(String email, String address, List<OrderItemBean> orderItemsBean) {
+	public OrderBean(String email, String address,Integer pincode, List<OrderItemBean> orderItemsBean) {
 		super();
-		this.email = email;
+//		this.email = email;
 		this.address = address;
+		this.pincode=pincode;
 		this.orderItemsBean = orderItemsBean;
 	}
 	

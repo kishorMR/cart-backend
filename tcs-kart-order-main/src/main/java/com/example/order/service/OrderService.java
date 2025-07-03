@@ -24,6 +24,7 @@ import com.example.order.entity.Orders;
 import com.example.order.entity.Product;
 import com.example.order.entity.User;
 import com.example.order.exception.*;
+import com.example.order.feign.ProductClient;
 import com.example.order.repository.CartItemRepository;
 import com.example.order.repository.CartRepository;
 import com.example.order.repository.OrderItemRepository;
@@ -54,13 +55,23 @@ public class OrderService {
 
 	@Autowired
 	private JavaMailSender javaMailSender;
+	
+	@Autowired
+	private ProductClient productClient;
 
-	public Orders PlaceOrder(OrderBean orderBean) {
-		User user = userRepo.findByEmail(orderBean.getEmail());
+	public Orders PlaceOrder(OrderBean orderBean, String email) {
+		User user = userRepo.findByEmail(email);
 		if (user == null) {
 			throw new UserNotFoundException();
 		}
 
+		for(OrderItemBean order:orderBean.getOrderItemsBean()) {
+			if(this.availableLocation(order.getProductId(), orderBean.getPincode())) {
+				continue;
+			}else
+				throw new ProductNotInPincodeException();
+		}
+		
 		Orders order = new Orders();
 		order.setUser(user);
 		order.setAddress(orderBean.getAddress());
@@ -71,8 +82,12 @@ public class OrderService {
 		List<OrderItem> items = new ArrayList<>();
 		Double TotalPrice = 0.0;
 		for (OrderItemBean dto : orderBean.getOrderItemsBean()) {
-			Product product = productRepo.findById(dto.getProductId())
-					.orElseThrow(() -> new ProductNotFoundException());
+			Product product;
+			try {
+			    product = productClient.getProductById(dto.getProductId());
+			} catch (Exception e) {
+			    throw new ProductNotFoundException();
+			}
 			if (product.getQuantity() < dto.getQuantity()) {
 				this.AlertMail(product);
 				throw new NoEnoughQuantityException();
@@ -80,9 +95,12 @@ public class OrderService {
 		}
 		ArrayList<String> ProductName = new ArrayList<>();
 		for (OrderItemBean dto : orderBean.getOrderItemsBean()) {
-
-			Product product = productRepo.findById(dto.getProductId())
-					.orElseThrow(() -> new ProductNotFoundException());
+			Product product;
+			try {
+			    product = productClient.getProductById(dto.getProductId());
+			} catch (Exception e) {
+			    throw new ProductNotFoundException();
+			}
 			product.setQuantity(product.getQuantity() - dto.getQuantity());
 			if (product.getQuantity() < 5) {
 				this.AlertMail(product);
@@ -176,31 +194,31 @@ public class OrderService {
 		}
 	}
 
-	public Orders cartMoveToOrder(String mail, String address) {
-		User user = userRepo.findByEmail(mail);
-		if (user == null) {
-			throw new UserNotFoundException();
-		}
-		Cart cart = cartRepo.findByUserEmail(mail);
-		if (cart == null) {
-			throw new OrdersNotFoundException();
-		}
-		OrderBean order = new OrderBean();
-		order.setEmail(mail);
-		order.setAddress(address);
-		List<OrderItemBean> OrderItems = new ArrayList<>();
-		for (CartItem a : cart.getCartItems()) {
-			OrderItemBean item = new OrderItemBean();
-			Product product = a.getProduct();
-			item.setProductId(product.getProductId());
-			item.setQuantity(a.getQuantity());
-			OrderItems.add(item);
-		}
-		order.setOrderItemsBean(OrderItems);
-		Orders orderReturn = this.PlaceOrder(order);
-		this.removeAllItemsFromCart(cart.getCartId());
-		return orderReturn;
-	}
+//	public Orders cartMoveToOrder(String mail, String address) {
+//		User user = userRepo.findByEmail(mail);
+//		if (user == null) {
+//			throw new UserNotFoundException();
+//		}
+//		Cart cart = cartRepo.findByUserEmail(mail);
+//		if (cart == null) {
+//			throw new OrdersNotFoundException();
+//		}
+//		OrderBean order = new OrderBean();
+//		order.setEmail(mail);
+//		order.setAddress(address);
+//		List<OrderItemBean> OrderItems = new ArrayList<>();
+//		for (CartItem a : cart.getCartItems()) {
+//			OrderItemBean item = new OrderItemBean();
+//			Product product = a.getProduct();
+//			item.setProductId(product.getProductId());
+//			item.setQuantity(a.getQuantity());
+//			OrderItems.add(item);
+//		}
+//		order.setOrderItemsBean(OrderItems);
+//		Orders orderReturn = this.PlaceOrder(order,o);
+//		this.removeAllItemsFromCart(cart.getCartId());
+//		return orderReturn;
+//	}
 
 	public void AlertMail(Product product) {
 		SendingMail mail = new SendingMail();
@@ -217,18 +235,18 @@ public class OrderService {
 		this.received(mail);
 	}
 
-	public void removeAllItemsFromCart(Long cartId) {
-
-		List<CartItem> cartItems = cartItemRepo.findByCartId(cartId);
-
-		for (CartItem cartItem : cartItems) {
-			Product product = cartItem.getProduct();
-			product.setQuantity(product.getQuantity() + cartItem.getQuantity());
-			productRepo.save(product);
-		}
-
-		cartItemRepo.deleteById(cartId);
-	}
+//	public void removeAllItemsFromCart(Long cartId) {
+//
+//		List<CartItem> cartItems = cartItemRepo.findByCartId(cartId);
+//
+//		for (CartItem cartItem : cartItems) {
+//			Product product = cartItem.getProduct();
+//			product.setQuantity(product.getQuantity() + cartItem.getQuantity());
+//			productRepo.save(product);
+//		}
+//
+//		cartItemRepo.deleteById(cartId);
+//	}
 	
 
 	Double generateTotalRevenue(Date startDate, Date endDate) {
@@ -281,5 +299,12 @@ public class OrderService {
 		stats.setNoOfOrders(noOfOrders(startDate,endDate));
 		stats.setProducts(topSellingProducts(startDate, endDate));
 		return stats;
+	}
+	
+	public boolean availableLocation(Long productId,Integer pincode) {
+		if(productRepo.isPincodeAvailableForProduct(productId,pincode))
+			return true;
+//			return true;"Product "+productPepo.findById(productId).get().getProductName()+" is available in thr location "+pincode;
+		return false;
 	}
 }

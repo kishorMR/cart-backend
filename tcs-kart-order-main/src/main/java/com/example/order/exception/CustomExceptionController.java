@@ -23,6 +23,11 @@ public class CustomExceptionController {
 		return new ResponseEntity<String>("Product Not Found", HttpStatus.NOT_FOUND);
 	}
 	
+	@ExceptionHandler(ProductNotInPincodeException.class)
+	public ResponseEntity<String> ProductNotInPincodeException(){
+		return new ResponseEntity<String>("Product can't be delivered to the location", HttpStatus.NOT_FOUND);
+	}
+	
 	@ExceptionHandler(OrdersNotFoundException.class)
 	public ResponseEntity<String> OrdersNotFoundException(){
 		return new ResponseEntity<String>("Orders Not Found", HttpStatus.NOT_FOUND);
